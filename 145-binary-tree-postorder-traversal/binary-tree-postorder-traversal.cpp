@@ -10,30 +10,20 @@
  * };
  */
 class Solution {
+
 public:
+void postorder(TreeNode * root,vector<int>&ans){
+    if(root==NULL)return;
+    postorder(root->left,ans);
+    postorder(root->right,ans);
+    
+    ans.push_back(root->val);
+
+}
     vector<int> postorderTraversal(TreeNode* root) {
-          vector<int> result;
-        if (!root) return result;
-
-        stack<TreeNode*> st;
-        TreeNode* lastVisited = nullptr;
-        TreeNode* curr = root;
-
-        while (curr != nullptr || !st.empty()) {
-            if (curr != nullptr) {
-                st.push(curr);
-                curr = curr->left;
-            } else {
-                TreeNode* peekNode = st.top();
-                if (peekNode->right != nullptr && lastVisited != peekNode->right) {
-                    curr = peekNode->right;
-                } else {
-                    result.push_back(peekNode->val);
-                    lastVisited = peekNode;
-                    st.pop();
-                }
-            }
-        }
-        return result;
+        vector<int>ans;
+        postorder(root,ans);
+        return ans;
+        
     }
 };
