@@ -12,29 +12,37 @@
 class Solution {
 public:
     vector<vector<int>> verticalTraversal(TreeNode* root) {
-        vector<vector<int>> ans;
-    map<int, multiset<pair<int, int>>> xToSortedPairs;  // {x: {(-y, val)}}
-
-    dfs(root, 0, 0, xToSortedPairs);
-
-    for (const auto& [_, pairs] : xToSortedPairs) {
-      vector<int> vals;
-      for (const pair<int, int>& pair : pairs)
-        vals.push_back(pair.second);
-      ans.push_back(vals);
+         map<int, map<int, multiset<int>>> nodes;
+    
+    // Queue for BFS traversal: each element = {node, {col, row}}
+    queue<pair<TreeNode*, pair<int, int>>> q;
+    q.push({root, {0, 0}});
+    
+    while (!q.empty()) {
+        auto p = q.front();
+        q.pop();
+        TreeNode* node = p.first;
+        int col = p.second.first;
+        int row = p.second.second;
+        
+        nodes[col][row].insert(node->val);
+        
+        if (node->left)
+            q.push({node->left, {col - 1, row + 1}});
+        if (node->right)
+            q.push({node->right, {col + 1, row + 1}});
     }
 
+    // Prepare final answer
+    vector<vector<int>> ans;
+    for (auto& colPair : nodes) {
+        vector<int> col;
+        for (auto& rowPair : colPair.second) {
+            col.insert(col.end(), rowPair.second.begin(), rowPair.second.end());
+        }
+        ans.push_back(col);
+    }
     return ans;
-  }
-
- private:
-  void dfs(TreeNode* root, int x, int y,
-           map<int, multiset<pair<int, int>>>& xToSortedPairs) {
-    if (root == nullptr)
-      return;
-    xToSortedPairs[x].emplace(y, root->val);
-    dfs(root->left, x - 1, y + 1, xToSortedPairs);
-    dfs(root->right, x + 1, y + 1, xToSortedPairs);
         
     }
 };
